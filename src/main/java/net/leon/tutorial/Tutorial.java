@@ -1,41 +1,39 @@
 package net.leon.tutorial;
 
-import com.mojang.logging.LogUtils;
+import net.leon.tutorial.init.ItemInit;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.slf4j.Logger;
 
-@Mod(Tutorial.MOD_ID)
-public class Tutorial
-{
-    public static final String MOD_ID = "tutorial";
-    private static final Logger LOGGER = LogUtils.getLogger();
-    public Tutorial()
-    {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+// Mod id
+@Mod("tutorial")
+public class Tutorial{
 
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
-
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-    private void commonSetup(final FMLCommonSetupEvent event)
-    {
-    }
-
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ClientModEvents
-    {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
+    // Creative Tab, mod CATEGORY, like food or smth (in chat)
+    public static final CreativeModeTab tutorial_Tab= new CreativeModeTab("tutorial"){
+        @Override
+        @OnlyIn(Dist.CLIENT)
+        public ItemStack makeIcon(){
+            return new ItemStack(ItemInit.DOG_COOKIE.get());
         }
+    };
+
+    // MOD ID
+    public static final String modID = "tutorial";
+
+    // Constructor
+    public Tutorial(){
+        // Create EventBus
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        // register Items into event bus, this means loading all ITEMS into the game
+        ItemInit.Items.register(bus);
+        // Tell MC Forge to register this class as mod
+        MinecraftForge.EVENT_BUS.register(this);
     }
 }
